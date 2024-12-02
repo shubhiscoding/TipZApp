@@ -1,9 +1,11 @@
 "use client";
+import { BrowserProvider } from "ethers";
+import { Eip1193Provider } from "ethers";
 import React, { createContext, useContext, useState } from "react";
 
-declare global {
-  interface Window {
-    ethereum: any;
+declare global{
+  interface Window{
+    ethereum: Eip1193Provider & BrowserProvider;
   }
 }
 

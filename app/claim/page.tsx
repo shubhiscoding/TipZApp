@@ -1,6 +1,7 @@
 "use client";
 import { signIn, useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
+
 import { ethers } from "ethers";
 
 const CONTRACT_ABI = [
@@ -44,6 +45,7 @@ export default function Claim() {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
         });
+
       } catch (error) {
         // If the chain is not added, add it
         if ((error as { code: number }).code === 4902) {
@@ -101,7 +103,6 @@ export default function Claim() {
   useEffect(() => {
     async function checkAvailableTips() {
       switchToUniChainSepolia();
-      
       if (youtubeChannelId) {
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
@@ -111,6 +112,7 @@ export default function Claim() {
           // Fetch tips using YouTube channel ID
           const tips = await contract.ammountOfTip(youtubeChannelId);
           setAvailableTips(ethers.formatEther(tips));
+
         } catch {
           setError("Failed to fetch available tips");
         }

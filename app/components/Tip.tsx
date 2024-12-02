@@ -104,6 +104,7 @@ const Tip: React.FC = () => {
               blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
             }]
           });
+
         } catch {
           throw new Error("Failed to add Unichain Sepolia network");
         }
@@ -116,7 +117,7 @@ const Tip: React.FC = () => {
   // Handle Tip Submission
   const handleTip = async () => {
     // Reset previous errors
-    setError(null);
+    // setError(null);
     setTransactionHash(null);
 
     // Validate inputs
