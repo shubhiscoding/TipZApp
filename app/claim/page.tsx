@@ -36,8 +36,8 @@ export default function Claim() {
   const UNICHAIN_SEPOLIA_CHAIN_ID = 1301;
   const UNICHAIN_SEPOLIA_RPC_URL = "https://sepolia.unichain.org";
 
-    // Switch to Base Sepolia Network
-    const switchToBaseSepolia = async () => {
+
+    const switchToUniChainSepolia = async () => {
       if (!window.ethereum) {
         throw new Error("MetaMask is not installed");
       }
@@ -54,18 +54,18 @@ export default function Claim() {
               method: "wallet_addEthereumChain",
               params: [{
                 chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}`,
-                chainName: "Base Sepolia Testnet",
+                chainName: "Unichain Sepolia Testnet",
                 rpcUrls: [UNICHAIN_SEPOLIA_RPC_URL],
                 nativeCurrency: {
                   name: "ETH",
                   symbol: "ETH",
                   decimals: 18
                 },
-                blockExplorerUrls: ["https://sepolia.basescan.org/"]
+                blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
               }]
             });
           } catch (addError) {
-            throw new Error("Failed to add Base Sepolia network");
+            throw new Error("Failed to add Unichain Sepolia network");
           }
         } else {
           throw error;
@@ -102,7 +102,7 @@ export default function Claim() {
   // Check available tips
   useEffect(() => {
     async function checkAvailableTips() {
-      switchToBaseSepolia();CONTRACT_ADDRESS
+      switchToUniChainSepolia();CONTRACT_ADDRESS
       console.log("Checking available tips for channel ID:", youtubeChannelId);
       if (youtubeChannelId) {
         try {
