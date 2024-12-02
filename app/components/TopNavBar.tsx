@@ -18,7 +18,7 @@ const TopNavBar: React.FC = () => {
       <div className="p-2 flex justify-between items-center w-full">
         {/* Logo */}
         <div className="bg-gradient-to-r from-[#4f90aa] to-[#ff5d78] bg-clip-text text-transparent font-bold text-2xl ml-8">
-          VideoTipper
+          TipZapp
         </div>
 
         {/* Navigation Links */}
