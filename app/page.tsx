@@ -1,7 +1,5 @@
-import TopNavBar from "./components/TopNavBar";
 import Tip from "./components/Tip";
 import CreatorsDisplay from "./components/CreatorsDisplay";
-import ClaimPage from "./claim/page";
 
 
 export default function Home() {

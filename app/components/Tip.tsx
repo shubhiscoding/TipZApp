@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ethers } from "ethers";
 
 const Tip: React.FC = () => {
@@ -77,19 +77,6 @@ const Tip: React.FC = () => {
     }
   };
 
-  // Handle Tip Amount Input (unchanged)
-  const handleTipAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const sanitizedValue = value.replace(/[^0-9.]/g, '');
-    
-    const decimalPointCount = sanitizedValue.split('.').length - 1;
-    if (decimalPointCount > 1) {
-      return;
-    }
-
-    setTipAmount(sanitizedValue);
-  };
-
   const switchToUniChainSepolia = async () => {
     if (!window.ethereum) {
       throw new Error("MetaMask is not installed");
@@ -99,6 +86,7 @@ const Tip: React.FC = () => {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
       });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // If the chain is not added, add it
       if (error.code === 4902) {
@@ -117,6 +105,7 @@ const Tip: React.FC = () => {
               blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
             }]
           });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (addError) {
           throw new Error("Failed to add Unichain Sepolia network");
         }
@@ -129,7 +118,7 @@ const Tip: React.FC = () => {
   // Handle Tip Submission
   const handleTip = async () => {
     // Reset previous errors
-    setError(null);
+    // setError(null);
     setTransactionHash(null);
 
     // Validate inputs
@@ -178,6 +167,7 @@ const Tip: React.FC = () => {
       setChannelId(null);
       setTipAmount('');
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error while tipping:", error);
       

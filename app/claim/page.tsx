@@ -1,7 +1,7 @@
 "use client";
 import { signIn, useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+
 import { ethers } from "ethers";
 
 const CONTRACT_ABI = [
@@ -25,7 +25,6 @@ const CONTRACT_ADDRESS = "0x5f83f75aaD69507DD9285C2ADcF59Aa845173aa2";
 
 export default function Claim() {
   const { data: session } = useSession();
-  const router = useRouter();
   
   // State variables
   const [youtubeChannelId, setYoutubeChannelId] = useState<string | null>(null);
@@ -46,9 +45,9 @@ export default function Claim() {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         // If the chain is not added, add it
-        if (error.code === 4902) {
+        if ((error as { code: number }).code === 4902) {
           try {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
@@ -64,7 +63,7 @@ export default function Claim() {
                 blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
               }]
             });
-          } catch (addError) {
+          } catch {
             throw new Error("Failed to add Unichain Sepolia network");
           }
         } else {
@@ -89,6 +88,7 @@ export default function Claim() {
           if (data.items && data.items.length > 0) {
             setYoutubeChannelId(data.items[0].id);
           }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
           setError("Failed to fetch YouTube channel");
         }
@@ -102,7 +102,7 @@ export default function Claim() {
   // Check available tips
   useEffect(() => {
     async function checkAvailableTips() {
-      switchToUniChainSepolia();CONTRACT_ADDRESS
+      switchToUniChainSepolia();
       console.log("Checking available tips for channel ID:", youtubeChannelId);
       if (youtubeChannelId) {
         try {
@@ -113,6 +113,7 @@ export default function Claim() {
           // Fetch tips using YouTube channel ID
           const tips = await contract.ammountOfTip(youtubeChannelId);
           setAvailableTips(ethers.formatEther(tips));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
           setError("Failed to fetch available tips");
         }

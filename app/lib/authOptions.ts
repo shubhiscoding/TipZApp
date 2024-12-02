@@ -1,5 +1,5 @@
 import Google from "next-auth/providers/google";
-import { NextAuthOptions, Session } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 
 declare module "next-auth" {
     interface Session {

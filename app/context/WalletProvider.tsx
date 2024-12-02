@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ethereum: any;
   }
 }
