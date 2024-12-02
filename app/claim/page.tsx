@@ -3,6 +3,7 @@ import { signIn, useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 
 import { ethers } from "ethers";
+import TopNavBar from "../components/TopNavBar";
 
 const CONTRACT_ABI = [
   "function ammountOfTip(string memory username) public view returns (uint256)"
@@ -170,6 +171,8 @@ export default function Claim() {
   }
 
   return (
+    <div>
+    <TopNavBar/>
     <div className="min-h-screen bg-gray-100 flex items-center justify-center ">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <div className="flex justify-between items-center mb-6">
@@ -224,6 +227,7 @@ export default function Claim() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
