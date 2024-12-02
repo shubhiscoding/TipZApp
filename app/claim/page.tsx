@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
-// Smart Contract ABI (you'll need to replace this with your actual ABI)
 const CONTRACT_ABI = [
   "function ammountOfTip(string memory username) public view returns (uint256)"
 ];
@@ -34,6 +33,47 @@ export default function Claim() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const UNICHAIN_SEPOLIA_CHAIN_ID = 1301;
+  const UNICHAIN_SEPOLIA_RPC_URL = "https://sepolia.unichain.org";
+
+    // Switch to Base Sepolia Network
+    const switchToBaseSepolia = async () => {
+      if (!window.ethereum) {
+        throw new Error("MetaMask is not installed");
+      }
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
+        });
+      } catch (error: any) {
+        // If the chain is not added, add it
+        if (error.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}`,
+                chainName: "Base Sepolia Testnet",
+                rpcUrls: [UNICHAIN_SEPOLIA_RPC_URL],
+                nativeCurrency: {
+                  name: "ETH",
+                  symbol: "ETH",
+                  decimals: 18
+                },
+                blockExplorerUrls: ["https://sepolia.basescan.org/"]
+              }]
+            });
+          } catch (addError) {
+            throw new Error("Failed to add Base Sepolia network");
+          }
+        } else {
+          throw error;
+        }
+      }
+    };
+  
+
 
   // Fetch YouTube Channel ID
   useEffect(() => {
@@ -62,6 +102,7 @@ export default function Claim() {
   // Check available tips
   useEffect(() => {
     async function checkAvailableTips() {
+      switchToBaseSepolia();CONTRACT_ADDRESS
       console.log("Checking available tips for channel ID:", youtubeChannelId);
       if (youtubeChannelId) {
         try {
