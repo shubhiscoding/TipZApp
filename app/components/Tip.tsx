@@ -11,7 +11,6 @@ const Tip: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Base Sepolia Contract Address
   const CONTRACT_ADDRESS = "0x5f83f75aaD69507DD9285C2ADcF59Aa845173aa2"; 
   const CONTRACT_ABI = [
     "function tip(string memory username) public payable",
@@ -20,7 +19,6 @@ const Tip: React.FC = () => {
   const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
   const MIN_TIP_AMOUNT = 0.0000001;
 
-  // Base Sepolia Chain ID and Network Details
   const UNICHAIN_SEPOLIA_CHAIN_ID = 1301;
   const UNICHAIN_SEPOLIA_RPC_URL = "https://sepolia.unichain.org";
 
@@ -92,8 +90,7 @@ const Tip: React.FC = () => {
     setTipAmount(sanitizedValue);
   };
 
-  // Switch to Base Sepolia Network
-  const switchToBaseSepolia = async () => {
+  const switchToUniChainSepolia = async () => {
     if (!window.ethereum) {
       throw new Error("MetaMask is not installed");
     }
@@ -110,18 +107,18 @@ const Tip: React.FC = () => {
             method: "wallet_addEthereumChain",
             params: [{
               chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}`,
-              chainName: "Base Sepolia Testnet",
+              chainName: "Unichain Sepolia Testnet",
               rpcUrls: [UNICHAIN_SEPOLIA_RPC_URL],
               nativeCurrency: {
                 name: "ETH",
                 symbol: "ETH",
                 decimals: 18
               },
-              blockExplorerUrls: ["https://sepolia.basescan.org/"]
+              blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
             }]
           });
         } catch (addError) {
-          throw new Error("Failed to add Base Sepolia network");
+          throw new Error("Failed to add Unichain Sepolia network");
         }
       } else {
         throw error;
@@ -155,8 +152,7 @@ const Tip: React.FC = () => {
     try {
       setIsProcessing(true);
 
-      // Switch to Base Sepolia network
-      await switchToBaseSepolia();
+      await switchToUniChainSepolia();
 
       // Create provider and get signer
       const provider = new ethers.BrowserProvider(window.ethereum);
