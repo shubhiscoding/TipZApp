@@ -9,7 +9,7 @@ const CreatorsDisplay: React.FC = () => {
       loop
       animationData={animationData}
       play
-      style={{ width: 950, height: 950 }}
+      style={{  width: 950, height: 850 }}
     />
     </div>
   );

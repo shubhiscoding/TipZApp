@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ethers } from "ethers";
 
 const Tip: React.FC = () => {
@@ -77,19 +77,6 @@ const Tip: React.FC = () => {
     }
   };
 
-  // Handle Tip Amount Input (unchanged)
-  const handleTipAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const sanitizedValue = value.replace(/[^0-9.]/g, '');
-    
-    const decimalPointCount = sanitizedValue.split('.').length - 1;
-    if (decimalPointCount > 1) {
-      return;
-    }
-
-    setTipAmount(sanitizedValue);
-  };
-
   const switchToUniChainSepolia = async () => {
     if (!window.ethereum) {
       throw new Error("MetaMask is not installed");
@@ -99,9 +86,9 @@ const Tip: React.FC = () => {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
       });
-    } catch (error: any) {
+    } catch (error) {
       // If the chain is not added, add it
-      if (error.code === 4902) {
+      if ((error as { code: number }).code === 4902) {
         try {
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
@@ -117,7 +104,7 @@ const Tip: React.FC = () => {
               blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
             }]
           });
-        } catch (addError) {
+        } catch {
           throw new Error("Failed to add Unichain Sepolia network");
         }
       } else {
@@ -178,16 +165,17 @@ const Tip: React.FC = () => {
       setChannelId(null);
       setTipAmount('');
 
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error while tipping:", error);
       
       // Handle specific error scenarios
-      if (error.message.includes("User denied transaction signature")) {
+      const err = error as Error;
+      if (err.message.includes("User denied transaction signature")) {
         setError("Transaction was rejected");
-      } else if (error.message.includes("Tip amount must be greater than")) {
+      } else if (err.message.includes("Tip amount must be greater than")) {
         setError(`Tip amount must be at least ${MIN_TIP_AMOUNT} ETH`);
       } else {
-        setError(error.message || "An error occurred while processing the tip");
+        setError(err.message || "An error occurred while processing the tip");
       }
     } finally {
       setIsProcessing(false);
@@ -196,7 +184,7 @@ const Tip: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col mt-16 w-[800px]">
+    <div className="flex flex-col w-[800px]">
       {/* Heading Section */}
       <h1 className="text-7xl font-semibold text-left">
         {['Seek partners', 'for influncer', 'collaboration'].map((line, index) => (
@@ -236,13 +224,13 @@ const Tip: React.FC = () => {
             onChange={handleVideoLinkChange}
           />
 
-          {/* Display Extracted Video ID and Channel ID */}
+          {/* Display Extracted Video ID and Channel ID
           {videoId && (
             <div className="text-sm text-gray-600">
               <p>Video ID: {videoId}</p>
               <p>Channel ID: {channelId || 'Fetching...'}</p>
             </div>
-          )}
+          )} */}
 
           {/* Input for Tip Amount */}
           <input

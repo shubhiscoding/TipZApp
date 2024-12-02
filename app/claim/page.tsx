@@ -1,6 +1,5 @@
 "use client";
 import { signIn, useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
@@ -25,8 +24,7 @@ const CONTRACT_ADDRESS = "0x5f83f75aaD69507DD9285C2ADcF59Aa845173aa2";
 
 export default function Claim() {
   const { data: session } = useSession();
-  const router = useRouter();
-  
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
   // State variables
   const [youtubeChannelId, setYoutubeChannelId] = useState<string | null>(null);
   const [availableTips, setAvailableTips] = useState<string>("0");
@@ -46,9 +44,9 @@ export default function Claim() {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${UNICHAIN_SEPOLIA_CHAIN_ID.toString(16)}` }],
         });
-      } catch (error: any) {
+      } catch (error) {
         // If the chain is not added, add it
-        if (error.code === 4902) {
+        if ((error as { code: number }).code === 4902) {
           try {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
@@ -64,7 +62,7 @@ export default function Claim() {
                 blockExplorerUrls: ["https://sepolia.uniscan.xyz"]
               }]
             });
-          } catch (addError) {
+          } catch {
             throw new Error("Failed to add Unichain Sepolia network");
           }
         } else {
@@ -89,7 +87,7 @@ export default function Claim() {
           if (data.items && data.items.length > 0) {
             setYoutubeChannelId(data.items[0].id);
           }
-        } catch (err) {
+        } catch {
           setError("Failed to fetch YouTube channel");
         }
       }
@@ -102,8 +100,8 @@ export default function Claim() {
   // Check available tips
   useEffect(() => {
     async function checkAvailableTips() {
-      switchToUniChainSepolia();CONTRACT_ADDRESS
-      console.log("Checking available tips for channel ID:", youtubeChannelId);
+      switchToUniChainSepolia();
+      
       if (youtubeChannelId) {
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
@@ -113,7 +111,7 @@ export default function Claim() {
           // Fetch tips using YouTube channel ID
           const tips = await contract.ammountOfTip(youtubeChannelId);
           setAvailableTips(ethers.formatEther(tips));
-        } catch (err) {
+        } catch {
           setError("Failed to fetch available tips");
         }
       }
@@ -126,6 +124,7 @@ export default function Claim() {
   const claimFunds = async () => {
     setIsLoading(true);
     setError(null);
+    setTransactionHash(null);
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -139,7 +138,7 @@ export default function Claim() {
       const userAddress = await user.getAddress();
       const tx = await contract.withdraw(youtubeChannelId, userAddress);
       await tx.wait();
-
+      setTransactionHash(tx.hash);
       // Reset tips after successful withdrawal
       setAvailableTips("0");
       alert("Funds successfully claimed!");
@@ -183,7 +182,6 @@ export default function Claim() {
 
         <div className="text-center mb-6">
           <p className="font-semibold">{session.user?.name}</p>
-          <p className="text-gray-500">{youtubeChannelId}</p>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-md mb-6">
@@ -205,6 +203,23 @@ export default function Claim() {
 
         {error && (
           <p className="text-red-500 text-sm mt-4 text-center">{error}</p>
+        )}
+
+         {/* Transaction Success */}
+         {transactionHash && (
+          <div className="mt-4">
+            <p className="text-green-600 semibold">
+              Tip sent successfully!{" "}
+              <a
+                href={`https://sepolia.uniscan.xyz/tx/${transactionHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                View on Uniscan
+              </a>
+            </p>
+          </div>
         )}
       </div>
     </div>
