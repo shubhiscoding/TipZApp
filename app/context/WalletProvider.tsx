@@ -1,10 +1,11 @@
 "use client";
+import { BrowserProvider } from "ethers";
+import { Eip1193Provider } from "ethers";
 import React, { createContext, useContext, useState } from "react";
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ethereum: any;
+declare global{
+  interface Window{
+    ethereum: Eip1193Provider & BrowserProvider;
   }
 }
 
